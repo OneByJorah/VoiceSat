@@ -1,4 +1,5 @@
 import os
+import re
 
 import httpx
 from fastapi import FastAPI, UploadFile, File
@@ -17,7 +18,7 @@ HERMES_MODEL = os.getenv("HERMES_MODEL", "hermes-3-llama-3.1-8b")
 HONCHO_URL = os.getenv("HONCHO_URL")
 HONCHO_API_KEY = os.getenv("HONCHO_API_KEY", "")
 HONCHO_WORKSPACE_ID = os.getenv("HONCHO_WORKSPACE_ID", "hermes-satellite")
-HONCHO_USER_ID = os.getenv("HONCHO_USER_ID", "jhonattan")
+HONCHO_USER_ID = os.getenv("HONCHO_USER_ID", "user")
 HONCHO_ASSISTANT_ID = os.getenv("HONCHO_ASSISTANT_ID", "hermes")
 CONTEXT_TOKENS = int(os.getenv("HONCHO_CONTEXT_TOKENS", "4000"))
 
@@ -40,7 +41,7 @@ def root():
 _honcho = None
 user_peer = None
 assistant_peer = None
-_initialized_sessions: set[str] = set(set())
+_initialized_sessions: set[str] = set()
 
 
 def _get_honcho() -> Honcho:
@@ -79,6 +80,8 @@ def health() -> dict:
 
 @app.post("/satellite/utterance")
 async def handle_utterance(satellite_id: str = "default", file: UploadFile = File(...)):
+    if not re.match(r"^[a-zA-Z0-9_-]{1,64}$", satellite_id):
+        return Response(status_code=400, content="invalid satellite_id")
     audio_bytes = await file.read()
 
     async with httpx.AsyncClient(timeout=60) as client:
