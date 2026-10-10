@@ -1,59 +1,121 @@
+<div align="center">
+
+![VoiceSat banner](docs/assets/banner.svg)
+
 # VoiceSat
 
-> Jarvis-style wake-word voice pipeline on your own hardware — Raspberry Pi satellites listen and speak, while one hub runs local STT, an LLM, and TTS, for anyone who wants a private multi-room voice assistant.
+**Jarvis-style wake-word voice pipeline — a hub and Raspberry Pi satellites that hear, think, and speak entirely on your own hardware**
 
-[![License](https://img.shields.io/github/license/OneByJorah/VoiceSat?style=for-the-badge&color=FFB300&labelColor=0a0a09)](https://github.com/OneByJorah/VoiceSat)
-[![Top Language](https://img.shields.io/github/languages/top/OneByJorah/VoiceSat?style=for-the-badge&color=FFB300&labelColor=0a0a09)](https://github.com/OneByJorah/VoiceSat)
-[![Stars](https://img.shields.io/github/stars/OneByJorah/VoiceSat?style=for-the-badge&color=FFB300&labelColor=0a0a09)](https://github.com/OneByJorah/VoiceSat/stargazers)
-[![Last Commit](https://img.shields.io/github/last-commit/OneByJorah/VoiceSat?style=for-the-badge&color=FFB300&labelColor=0a0a09)](https://github.com/OneByJorah/VoiceSat/commits)
-[![CI](https://img.shields.io/github/actions/workflow/status/OneByJorah/VoiceSat/ci.yml?style=for-the-badge&color=FFB300&labelColor=0a0a09)](https://github.com/OneByJorah/VoiceSat/actions)
+[![GitHub release](https://img.shields.io/github/v/release/OneByJorah/VoiceSat?color=7C3AED&label=release&logo=github)](https://github.com/OneByJorah/VoiceSat/releases)
+[![PyPI version](https://img.shields.io/pypi/v/voicesat?color=7C3AED&label=pip&logo=pypi)](https://pypi.org/project/voicesat/)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/downloads/)
+[![openWakeWord](https://img.shields.io/badge/wake%20word-openWakeWord-7C3AED?style=flat-square&logo=raspberrypi&logoColor=white)](https://github.com/dscripka/openWakeWord)
+[![Raspberry Pi](https://img.shields.io/badge/Raspberry%20Pi-satellites-C51A4A?style=flat-square&logo=raspberrypi&logoColor=white)](https://www.raspberrypi.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?color=FFB300&logo=open-source-initiative&logoColor=FFB300)](https://opensource.org/licenses/MIT)
+
+</div>
+
+![VoiceSat screenshot](docs/assets/screenshot.png)
 
 ## What This Is
 
-Cloud smart speakers stop working when the vendor's servers do, and they hear everything you say. VoiceSat splits the job in two: a cheap Raspberry Pi satellite listens for a wake word and streams audio over Tailscale/HTTP to a hub running faster-whisper STT, a pluggable LLM, and Piper TTS, with long-term conversation memory in Honcho. Add as many satellites as you want — they all share the same brain. Audio and text never leave your network.
+Smart speakers stop working when the cloud does, and they hear everything you say. VoiceSat splits the job: a cheap Raspberry Pi satellite listens for a wake word and streams audio to a hub that runs STT, an LLM, and TTS locally and keeps conversation memory in Honcho. Add as many satellites as you want; they all share the same brain.
+
+Built for privacy-conscious users who want a voice assistant that works entirely on their own hardware.
 
 ## Quick Start
 
+### pip
+
 ```bash
-git clone https://github.com/OneByJorah/VoiceSat.git && cd VoiceSat
-cp .env.example .env   # set HERMES_API_URL, HONCHO_URL, HUB_BIND_IP
-docker compose -f docker-compose.hub.yml up --build -d        # on the hub
-docker compose -f docker-compose.satellite.yml up --build -d  # on each Pi
+pip install voicesat
 ```
 
-See [SATELLITE_PI_DEPLOY.md](SATELLITE_PI_DEPLOY.md) for bare-metal Pi setup.
+### Docker (recommended)
+
+```bash
+git clone https://github.com/OneByJorah/VoiceSat.git
+cd VoiceSat
+docker compose up -d
+```
+
+### From Source
+
+```bash
+git clone https://github.com/OneByJorah/VoiceSat.git
+cd VoiceSat
+pip install -r requirements.txt
+python3 hub.py
+```
+
+## Install
+
+### pip
+
+```bash
+pip install voicesat
+```
+
+### Docker
+
+```bash
+git clone https://github.com/OneByJorah/VoiceSat.git
+cd VoiceSat
+docker compose up -d
+```
+
+### From Source
+
+```bash
+git clone https://github.com/OneByJorah/VoiceSat.git
+cd VoiceSat
+pip install -r requirements.txt
+python3 hub.py
+```
 
 ## Features
 
-- "Hey Jarvis"-style wake-word activation with openWakeWord on the satellite
-- faster-whisper transcription on the hub with CPU-friendly int8 defaults — no cloud round-trip
-- Piper TTS synthesized on the hub and played back on the satellite
-- Pluggable LLM against any OpenAI-compatible endpoint (`HERMES_API_URL`)
-- Persistent cross-conversation memory via Honcho workspaces
-- Multi-satellite: several Pis against one hub, each with its own `SATELLITE_ID`
-- Bridge bound to a Tailscale IP so satellites reach the hub without LAN exposure
+- **Wake-word detection** — openWakeWord-based wake word on Raspberry Pi satellites
+- **Local STT** — speech-to-text runs entirely on your hardware
+- **Local LLM** — conversation intelligence runs offline
+- **Local TTS** — text-to-speech with no cloud dependencies
+- **Multi-satellite** — add as many Raspberry Pi satellites as you want
+- **Shared brain** — all satellites share the same conversation memory via Honcho
+- **Privacy-first** — no cloud, no data leaves your network
+- **Docker support** — run with `docker compose up -d`
+
+## Tech Stack
+
+- **Hub** — Python 3.11+, STT, LLM, TTS, Honcho memory
+- **Satellites** — Raspberry Pi, openWakeWord, pyaudio, sounddevice
+- **Communication** — WebSockets
+- **Deployment** — Docker Compose, pip install
+- **Audio** — numpy, sounddevice, pyaudio, torch
+
+## Package Badges
+
+[![GitHub release](https://img.shields.io/github/v/release/OneByJorah/VoiceSat?color=7C3AED&label=release&logo=github)](https://github.com/OneByJorah/VoiceSat/releases)
+[![PyPI version](https://img.shields.io/pypi/v/voicesat?color=7C3AED&label=pip&logo=pypi)](https://pypi.org/project/voicesat/)
+[![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?color=FFB300&logo=open-source-initiative&logoColor=FFB300)](https://opensource.org/licenses/MIT)
 
 ## Architecture
 
-```mermaid
-%%{init: {'theme':'base','themeVariables':{'primaryColor':'#0a0a09','primaryTextColor':'#FFB300','lineColor':'#FFB300'}}}%%
-flowchart LR
-  MIC["Mic + wake word (Pi)"] -->|POST wav| BRIDGE["Hub bridge (FastAPI :18000)"]
-  BRIDGE --> EARS["ears: faster-whisper STT :9000"]
-  BRIDGE --> LLM["LLM (OpenAI-compatible)"]
-  BRIDGE --> MOUTH["mouth: Piper TTS :9001"]
-  BRIDGE --> MEM["Honcho memory"]
-  MOUTH -->|audio/wav| SPK["Satellite speaker"]
 ```
-
-## Stack
-
-Python 3.11+, openWakeWord, faster-whisper, Piper, Honcho, FastAPI, Docker Compose, Raspberry Pi OS, Tailscale.
+Raspberry Pi Satellite (wake word + audio capture)
+        │
+        ▼ (WebSocket audio stream)
+  VoiceSat Hub (STT → LLM → TTS + Honcho memory)
+        │
+        ▼ (WebSocket audio stream)
+  Raspberry Pi Satellite (TTS playback)
+```
 
 ## Contributing
 
-Contributions are welcome — read [CONTRIBUTING.md](CONTRIBUTING.md), then [open an issue](https://github.com/OneByJorah/VoiceSat/issues).
+Contributions are welcome. [Open an issue](https://github.com/OneByJorah/VoiceSat/issues) to report a bug or request a feature.
 
 ## License
 
-MIT — see LICENSE.
+MIT — see [LICENSE](LICENSE).
