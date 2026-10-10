@@ -5,7 +5,7 @@
 FROM python:3.11-slim AS builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc libasound2-dev portaudio19-dev \
+    gcc g++ python3-dev libasound2-dev portaudio19-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
